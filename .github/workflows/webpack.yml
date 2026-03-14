@@ -33,7 +33,7 @@ jobs:
           node-version: 18
           cache: npm
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
       - name: Install Playwright browsers
@@ -42,12 +42,22 @@ jobs:
       - name: Build (if present)
         run: npm run build --if-present
 
-      - name: Run tests
-        run: npm run test
+      # 👇 Diagnostic: show what Playwright can discover
+      - name: List discovered tests
+        run: npx playwright test --list || true
 
-      # ---- Hard-coded 80% coverage gate (placeholder) ----
-      # Replace this with a real coverage parser later (e.g., nyc/c8 or Vite coverage),
-      # but this satisfies your "hard coded = 80%" requirement now.
+      # 👇 Run tests (folder-based for reliability on Linux/Windows)
+      #    If your tests live elsewhere, adjust `tests` to that folder.
+      - name: Run tests
+        run: |
+          set -e
+          if [ -d "tests" ]; then
+            npx playwright test tests
+          else
+            echo "❌ 'tests' folder not found. Set testDir or fix paths."
+            exit 1
+          fi
+          
       - name: Enforce coverage ≥ 80% (hard-coded)
         run: |
           REQUIRED=80
@@ -61,7 +71,8 @@ jobs:
             echo "✅ Coverage gate passed (>= ${REQUIRED}%)"
           fi
 
-      - name: Upload Playwright HTML report (artifact)
+      # Artifacts
+      - name: Upload Playwright HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -79,19 +90,16 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      # Prepare static site artifact from the report for Pages
-      - name: Prepare Pages artifact
+      - name: Prepare Pages artifact (Playwright HTML report)
         if: always()
         uses: actions/upload-pages-artifact@v3
         with:
-          # Deploy the Playwright HTML report as the site
           path: playwright-report
 
   deploy:
     name: Deploy HTML report to GitHub Pages
     runs-on: ubuntu-latest
     needs: build-test
-    # Deploy only from main/master (not PRs)
     if: |
       (github.event_name == 'push') &&
       (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
