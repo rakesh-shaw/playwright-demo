@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test",
-    "test:headed": "playwright test --headed",
-    "report": "playwright show-report"
+    "test": "playwright test tests",
+    "test:smoke": "playwright test tests/smoke",
+    "test:regression": "playwright test tests/regression",
+    "report": "playwright show-report",
+    "build": "echo \"(optional) add your build here\""
   },
   "keywords": [],
   "author": "Rakesh Kumar Shaw",
