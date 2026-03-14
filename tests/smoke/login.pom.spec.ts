@@ -1,9 +1,14 @@
-import loginData from '../../test-data/login.json';
 import { test, expect } from '../../src/fixtures/pom-fixtures';
 
-// Suite-specific defaults for saucedemo
+const loginData = {
+  "baseUrl": "https://www.saucedemo.com",
+  "valid": { "username": "standard_user", "password": "secret_sauce" },
+  "locked": { "username": "locked_out_user", "password": "secret_sauce" },
+  "invalid": { "username": "standard_user", "password": "wrong_password" }
+}
+
 test.use({
-  baseURL: loginData.baseUrl,         // https://www.saucedemo.com
+  baseURL: loginData.baseUrl,        
   testIdAttribute: 'data-test'
 });
 

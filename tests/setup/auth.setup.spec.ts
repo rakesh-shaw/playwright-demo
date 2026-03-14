@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
-import loginData from '../../test-data/login.json';
+
+const loginData = {
+  "baseUrl": "https://www.saucedemo.com",
+  "valid": { "username": "standard_user", "password": "secret_sauce" },
+  "locked": { "username": "locked_out_user", "password": "secret_sauce" },
+  "invalid": { "username": "standard_user", "password": "wrong_password" }
+}
 
 test.use({
   baseURL: loginData.baseUrl,
